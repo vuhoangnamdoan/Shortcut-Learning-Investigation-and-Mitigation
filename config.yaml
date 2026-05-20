@@ -1,0 +1,87 @@
+seed: 42
+
+paths:
+  datasets_dir: "datasets"
+  intrinsic_data_dir: "intrinsic/data"
+  intrinsic_splits_dir: "intrinsic/splits"
+  results_dir: "results"
+
+models:
+  - bert
+  - deberta
+  - llama
+  - qwen
+
+model_registry:
+  bert: 
+    family: "encoder"
+    hf_model_id: "google-bert/bert-base-uncased"
+    max_seq_length: 512
+  
+  deberta:
+    family: "encoder"
+    hf_model_id: "microsoft/deberta-v3-base"
+    max_seq_length: 512
+
+  llama:
+    family: "llm"
+    hf_model_id: "meta-llama/Llama-3.2-3B-Instruct"
+    max_new_tokens: 8
+    temperature: 0.0
+
+  qwen:
+    family: "llm"
+    hf_model_id: "Qwen/Qwen2.5-3B-Instruct"
+    max_new_tokens: 8
+    temperature: 0.0
+
+datasets:
+  - pheme
+  - COCO
+  - gossipcop
+  - kaggle1
+  - kaggle2
+
+intrinsic:
+  signals:
+    - sentiment
+    - perplexity
+  split_seed: 20250101
+
+  sentiment:
+    model_name: "tabularisai/robust-sentiment-analysis"
+    max_length: 512
+
+  perplexity:
+    model_id: "openai-community/gpt2"
+    max_length: 512
+
+extrinsic:
+  signals:
+    - tone
+    - word-choice
+    - paraphrase
+  rewrite_backend: "ollama"
+  ollama_host: "https://ollama.com"
+  ollama_model: "gpt-oss:120b-cloud"
+  max_claim_chars: 4000
+  max_new_tokens: 1000
+  request_timeout: 300
+  max_retries: 3
+  retry_backoff_sec: 2.0
+  profiles:
+    word-choice:
+      - simple
+      - complex
+    tone:
+      - formal
+      - informal
+    paraphrase:
+      - paraphrase
+
+runtime:
+  device: "auto"   # auto|cpu|cuda
+  batch_size: 2
+  epochs: 10
+  early_stopping_patience: 10
+  min_delta: 0.0001
